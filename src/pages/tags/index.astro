@@ -1,0 +1,26 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getPublishedPosts, getAllTags } from '@/utils/posts';
+
+const posts = await getPublishedPosts();
+const tags = getAllTags(posts);
+---
+
+<BaseLayout title="标签">
+  <section class="py-12">
+    <h1 class="text-3xl font-bold mb-8">标签</h1>
+    <div class="flex flex-wrap gap-3">
+      {[...tags.entries()].sort((a, b) => b[1] - a[1]).map(([tag, count]) => (
+        <a
+          href={`/tags/${tag}`}
+          class="inline-flex items-center gap-2 rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 transition-colors"
+        >
+          {tag}
+          <span class="inline-flex items-center justify-center rounded-full bg-zinc-300 dark:bg-zinc-600 px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:text-zinc-200">
+            {count}
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

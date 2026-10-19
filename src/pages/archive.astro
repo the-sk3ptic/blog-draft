@@ -1,0 +1,44 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getPublishedPosts, groupPostsByYear } from '@/utils/posts';
+
+const posts = await getPublishedPosts();
+const postsByYear = groupPostsByYear(posts);
+const years = [...postsByYear.keys()].sort((a, b) => b - a);
+---
+
+<BaseLayout title="归档">
+  <section class="py-12">
+    <h1 class="text-3xl font-bold mb-12">归档</h1>
+    <div class="space-y-12">
+      {years.map((year) => (
+        <div>
+          <h2 class="text-2xl font-semibold text-zinc-800 dark:text-zinc-200 mb-6 border-b border-zinc-200 dark:border-zinc-700 pb-2">
+            {year}
+            <span class="text-sm font-normal text-zinc-500 ml-2">
+              ({postsByYear.get(year)!.length} 篇)
+            </span>
+          </h2>
+          <ul class="space-y-4">
+            {postsByYear.get(year)!.map((post) => (
+              <li class="flex items-baseline gap-4">
+                <time
+                  class="text-sm text-zinc-500 dark:text-zinc-400 shrink-0 tabular-nums"
+                  datetime={post.data.pubDate.toISOString()}
+                >
+                  {post.data.pubDate.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
+                </time>
+                <a
+                  href={`/posts/${post.id}`}
+                  class="text-zinc-800 dark:text-zinc-200 hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors"
+                >
+                  {post.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

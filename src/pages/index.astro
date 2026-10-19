@@ -1,0 +1,40 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Card from '@/components/Card.astro';
+import { getPublishedPosts } from '@/utils/posts';
+import { SITE } from '@/types';
+
+const allPosts = await getPublishedPosts();
+const recentPosts = allPosts.slice(0, 10);
+const hasMore = allPosts.length > 10;
+---
+
+<BaseLayout title={SITE.title}>
+  <section class="py-16 text-center">
+    <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
+      {SITE.title}
+    </h1>
+    <p class="mt-4 text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
+      {SITE.description}
+    </p>
+  </section>
+
+  <section class="pb-16">
+    <h2 class="text-2xl font-semibold mb-8">最近文章</h2>
+    <div class="grid gap-6">
+      {recentPosts.map((post) => (
+        <Card post={post} />
+      ))}
+    </div>
+    {hasMore && (
+      <div class="mt-10 text-center">
+        <a
+          href="/archive"
+          class="inline-block rounded-lg bg-zinc-900 px-6 py-3 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300 transition-colors"
+        >
+          查看所有文章 →
+        </a>
+      </div>
+    )}
+  </section>
+</BaseLayout>

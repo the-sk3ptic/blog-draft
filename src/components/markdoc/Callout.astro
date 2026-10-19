@@ -1,0 +1,32 @@
+---
+interface Props {
+  type?: 'note' | 'tip' | 'warning' | 'danger';
+  title?: string;
+}
+
+const { type = 'note', title } = Astro.props;
+
+const icons = {
+  note: 'ℹ️',
+  tip: '💡',
+  warning: '⚠️',
+  danger: '🚨',
+};
+
+const styles = {
+  note: 'border-blue-500/30 bg-blue-50/50 text-blue-900 dark:bg-blue-950/20 dark:text-blue-200 dark:border-blue-500/40',
+  tip: 'border-emerald-500/30 bg-emerald-50/50 text-emerald-900 dark:bg-emerald-950/20 dark:text-emerald-200 dark:border-emerald-500/40',
+  warning: 'border-amber-500/30 bg-amber-50/50 text-amber-900 dark:bg-amber-950/20 dark:text-amber-200 dark:border-amber-500/40',
+  danger: 'border-rose-500/30 bg-rose-50/50 text-rose-900 dark:bg-rose-950/20 dark:text-rose-200 dark:border-rose-500/40',
+};
+---
+
+<div class={`my-6 rounded-lg border p-4 not-prose ${styles[type]}`}>
+  <div class="flex items-center gap-2 font-medium mb-1">
+    <span class="text-base select-none">{icons[type]}</span>
+    <span>{title || type.toUpperCase()}</span>
+  </div>
+  <div class="text-sm leading-relaxed opacity-90 pl-6">
+    <slot />
+  </div>
+</div>

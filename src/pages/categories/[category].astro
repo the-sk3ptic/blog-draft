@@ -1,0 +1,41 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Card from '@/components/Card.astro';
+import { getPublishedPosts, getAllCategories, getPostsByCategory } from '@/utils/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const categories = getAllCategories(posts);
+  return [...categories.keys()].map((category) => ({
+    params: { category },
+    props: { posts: getPostsByCategory(posts, category) },
+  }));
+}
+
+const { category } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<BaseLayout title={`分类: ${category}`}>
+  <section class="py-12">
+    <div class="mb-8">
+      <a
+        href="/categories"
+        class="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+      >
+        ← 所有分类
+      </a>
+    </div>
+    <h1 class="text-3xl font-bold mb-2">
+      {category}
+    </h1>
+    <p class="text-zinc-500 dark:text-zinc-400 mb-8">
+      共 {posts.length} 篇文章
+    </p>
+    <div class="grid gap-6">
+      {posts.map((post) => (
+        <Card post={post} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

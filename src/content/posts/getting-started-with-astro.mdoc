@@ -1,0 +1,60 @@
+---
+title: 'Astro 入门指南'
+description: '快速了解 Astro 框架的核心概念和基本用法。'
+pubDate: 2024-01-20
+tags: ['Astro', '前端', '教程']
+category: '技术'
+---
+
+# Astro 入门指南
+
+Astro 是一个现代化的静态站点生成框架，以其出色的性能和灵活性著称。
+
+## 核心特性
+
+### 零 JavaScript 默认
+
+Astro 默认不向客户端发送 JavaScript。页面完全由 HTML 和 CSS 构成，加载速度极快。
+
+### 内容驱动
+
+Astro 天然支持 Markdown、MDX 和 Markdoc，非常适合构建博客和文档站点。
+
+### 组件岛屿
+
+当你需要交互时，Astro 的「组件岛屿」架构让你可以只在需要的地方加载 JavaScript：
+
+```astro
+---
+import InteractiveWidget from './Widget.jsx';
+---
+
+<p>这段文字是纯 HTML。</p>
+<InteractiveWidget client:visible />
+```
+
+## 项目结构
+
+一个典型的 Astro 项目结构如下：
+
+- `src/pages/` — 页面路由
+- `src/components/` — 可复用组件
+- `src/layouts/` — 页面布局
+- `src/content/` — 内容集合
+- `public/` — 静态资源
+
+## 受控自定义 Tag 演示
+
+通过 Markdoc 的受控 Tag 体系，我们可以直接使用语义化标签，而无需写 JSX：
+
+{% callout type="tip" title="小贴士" %}
+Markdoc 保证了文档层级与排版的严格受控，非常适合团队写作或拒绝一次性随意布局的场景。
+{% /callout %}
+
+{% callout type="warning" title="注意" %}
+只有在真正需要嵌入高自由度动态组件时，才建议选择 MDX。
+{% /callout %}
+
+## 总结
+
+Astro 是构建内容驱动网站的理想选择。它的零 JS 默认策略和灵活的组件系统让开发体验和用户体验都非常出色。
