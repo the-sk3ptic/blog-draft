@@ -1,7 +1,8 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import PostLayout from '@/layouts/PostLayout.astro';
 import { getPublishedPosts } from '@/utils/posts';
+import { getReadingTime } from '@/utils/reading-time';
 
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
@@ -16,11 +17,14 @@ export async function getStaticPaths() {
 }
 
 const { post, prevPost, nextPost } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+const readingTime = post.body ? getReadingTime(post.body) : '3 分钟';
 ---
 
 <PostLayout
   frontmatter={post.data}
+  headings={headings}
+  readingTime={readingTime}
   prevPost={prevPost ? { title: prevPost.data.title, slug: prevPost.id } : null}
   nextPost={nextPost ? { title: nextPost.data.title, slug: nextPost.id } : null}
 >

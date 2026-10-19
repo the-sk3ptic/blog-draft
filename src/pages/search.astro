@@ -1,0 +1,175 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="搜索文章" description="在博客中搜索文章内容">
+  <div class="max-w-3xl mx-auto py-8">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold mb-2">文章搜索</h1>
+      <p class="text-sm text-[var(--color-text-secondary)]">
+        支持搜索文章标题、内容、分类和标签
+      </p>
+    </div>
+
+    <!-- Search Input -->
+    <div class="relative mb-8">
+      <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--color-text-muted)]">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <input
+        type="search"
+        id="search-input"
+        placeholder="输入关键词进行搜索..."
+        autocomplete="off"
+        class="w-full pl-10 pr-4 py-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] placeholder-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)]/20 transition-all shadow-sm"
+      />
+    </div>
+
+    <!-- Results Status -->
+    <div id="search-status" class="text-sm text-[var(--color-text-muted)] mb-4 hidden">
+      找到 <span id="results-count" class="font-semibold text-[var(--color-text)]">0</span> 条相关结果
+    </div>
+
+    <!-- Results List -->
+    <div id="results-container" class="space-y-4"></div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden text-center py-12 text-[var(--color-text-muted)]">
+      <svg class="mx-auto mb-3 opacity-40" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        <line x1="8" y1="11" x2="14" y2="11"></line>
+      </svg>
+      <p class="text-base font-medium text-[var(--color-text-secondary)]">没有找到匹配的文章</p>
+      <p class="text-xs mt-1">试试换一个关键词或缩短搜索词</p>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  interface SearchItem {
+    id: string;
+    title: string;
+    description: string;
+    pubDate: string;
+    tags: string[];
+    category: string;
+    body: string;
+  }
+
+  let postsData: SearchItem[] | null = null;
+
+  async function fetchSearchIndex(): Promise<SearchItem[]> {
+    if (postsData) return postsData;
+    try {
+      const res = await fetch('/search.json');
+      postsData = await res.json();
+      return postsData || [];
+    } catch (e) {
+      console.error('Failed to load search index:', e);
+      return [];
+    }
+  }
+
+  function initSearch() {
+    const input = document.getElementById('search-input') as HTMLInputElement | null;
+    const container = document.getElementById('results-container');
+    const status = document.getElementById('search-status');
+    const count = document.getElementById('results-count');
+    const emptyState = document.getElementById('empty-state');
+
+    if (!input || !container || !status || !count || !emptyState) return;
+
+    // Load index early
+    fetchSearchIndex();
+
+    // Check URL query param
+    const params = new URLSearchParams(window.location.search);
+    const initialQuery = params.get('q');
+    if (initialQuery) {
+      input.value = initialQuery;
+      performSearch(initialQuery);
+    }
+
+    input.addEventListener('input', (e) => {
+      const query = (e.target as HTMLInputElement).value.trim();
+      const newUrl = new URL(window.location.href);
+      if (query) {
+        newUrl.searchParams.set('q', query);
+      } else {
+        newUrl.searchParams.delete('q');
+      }
+      window.history.replaceState({}, '', newUrl.toString());
+      performSearch(query);
+    });
+
+    async function performSearch(query: string) {
+      if (!query) {
+        container.innerHTML = '';
+        status.classList.add('hidden');
+        emptyState.classList.add('hidden');
+        return;
+      }
+
+      const posts = await fetchSearchIndex();
+      const q = query.toLowerCase();
+
+      const matched = posts.filter((post) => {
+        return (
+          post.title.toLowerCase().includes(q) ||
+          post.description.toLowerCase().includes(q) ||
+          post.category.toLowerCase().includes(q) ||
+          post.tags.some((tag) => tag.toLowerCase().includes(q)) ||
+          post.body.toLowerCase().includes(q)
+        );
+      });
+
+      status.classList.remove('hidden');
+      count.textContent = String(matched.length);
+
+      if (matched.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      container.innerHTML = matched
+        .map((post) => {
+          const date = new Date(post.pubDate).toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          });
+          const tagBadges = post.tags
+            .map(
+              (t) =>
+                `<span class="px-2 py-0.5 rounded-full text-xs bg-[var(--color-surface-alt)] text-[var(--color-text-secondary)]">#${t}</span>`
+            )
+            .join(' ');
+
+          return `
+            <a href="/posts/${post.id}" class="block p-5 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-primary-400)] hover:shadow-sm transition-all group">
+              <div class="flex items-center gap-2 text-xs text-[var(--color-text-muted)] mb-2">
+                <time datetime="${post.pubDate}">${date}</time>
+                ${post.category ? `<span class="px-2 py-0.5 rounded bg-[var(--color-primary-100)] text-[var(--color-primary-700)] dark:bg-[var(--color-primary-900)] dark:text-[var(--color-primary-200)] font-medium">${post.category}</span>` : ''}
+              </div>
+              <h2 class="text-lg font-semibold text-[var(--color-text)] group-hover:text-[var(--color-primary-600)] transition-colors mb-2">
+                ${post.title}
+              </h2>
+              <p class="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-3">
+                ${post.description || post.body.slice(0, 100)}
+              </p>
+              ${post.tags.length > 0 ? `<div class="flex flex-wrap gap-1.5">${tagBadges}</div>` : ''}
+            </a>
+          `;
+        })
+        .join('');
+    }
+  }
+
+  document.addEventListener('astro:page-load', initSearch);
+</script>

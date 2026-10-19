@@ -1,0 +1,109 @@
+---
+export interface HeadingItem {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: HeadingItem[];
+}
+
+const { headings } = Astro.props;
+
+// Filter for h2 and h3
+const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
+---
+
+{
+  toc.length > 0 && (
+    <aside class="toc-container not-prose mb-8 p-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)]">
+      <div class="toc-title flex items-center justify-between text-sm font-semibold text-[var(--color-text)] mb-3">
+        <span class="flex items-center gap-1.5">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+          文章目录
+        </span>
+      </div>
+      <nav class="toc-nav">
+        <ul class="space-y-1.5 text-sm">
+          {toc.map((heading) => (
+            <li
+              class={`toc-item transition-colors duration-150 ${
+                heading.depth === 3 ? 'pl-4 text-xs' : 'font-medium'
+              }`}
+            >
+              <a
+                href={`#${heading.slug}`}
+                class="toc-link block py-0.5 text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] transition-colors rounded"
+                data-slug={heading.slug}
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  )
+}
+
+<script>
+  function setupTOCActiveState() {
+    const links = document.querySelectorAll('.toc-link');
+    if (!links.length) return;
+
+    const headingElements: HTMLElement[] = [];
+    links.forEach((link) => {
+      const slug = link.getAttribute('data-slug');
+      if (slug) {
+        const el = document.getElementById(slug);
+        if (el) headingElements.push(el);
+      }
+    });
+
+    if (!headingElements.length) return;
+
+    function onScroll() {
+      const scrollPosition = window.scrollY + 100;
+      let currentActiveSlug = '';
+
+      for (let i = 0; i < headingElements.length; i++) {
+        const heading = headingElements[i];
+        if (heading.offsetTop <= scrollPosition) {
+          currentActiveSlug = heading.id;
+        } else {
+          break;
+        }
+      }
+
+      links.forEach((link) => {
+        if (link.getAttribute('data-slug') === currentActiveSlug) {
+          link.classList.add('text-[var(--color-primary-600)]', 'font-semibold', 'underline');
+        } else {
+          link.classList.remove('text-[var(--color-primary-600)]', 'font-semibold', 'underline');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  document.addEventListener('astro:page-load', setupTOCActiveState);
+</script>

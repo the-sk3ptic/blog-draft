@@ -1,5 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import TOC from '@/components/TOC.astro';
+import CopyCode from '@/components/CopyCode.astro';
+import Giscus from '@/components/Giscus.astro';
+import type { HeadingItem } from '@/components/TOC.astro';
 
 interface PostLink {
   title: string;
@@ -16,11 +20,13 @@ interface Props {
     category?: string;
     image?: string;
   };
-  prevPost?: PostLink;
-  nextPost?: PostLink;
+  headings?: HeadingItem[];
+  readingTime?: string;
+  prevPost?: PostLink | null;
+  nextPost?: PostLink | null;
 }
 
-const { frontmatter, prevPost, nextPost } = Astro.props;
+const { frontmatter, headings = [], readingTime, prevPost, nextPost } = Astro.props;
 const { title, description, pubDate, updatedDate, tags, category, image } = frontmatter;
 
 const formattedDate = new Date(pubDate).toLocaleDateString('zh-CN', {
@@ -54,6 +60,12 @@ const formattedUpdatedDate = updatedDate
             （更新于 {formattedUpdatedDate}）
           </span>
         )}
+        {readingTime && (
+          <>
+            <span class="text-[var(--color-text-muted)]">·</span>
+            <span>预计阅读 {readingTime}</span>
+          </>
+        )}
         {category && (
           <a
             href={`/categories/${category}`}
@@ -76,6 +88,9 @@ const formattedUpdatedDate = updatedDate
         </div>
       )}
     </header>
+
+    <!-- Table of Contents -->
+    {headings && headings.length > 0 && <TOC headings={headings} />}
 
     <!-- Article Body -->
     <div class="prose prose-lg dark:prose-invert max-w-none">
@@ -109,8 +124,9 @@ const formattedUpdatedDate = updatedDate
     </nav>
 
     <!-- Comments Section -->
-    <div id="comments" class="mt-12 pt-8 border-t border-[var(--color-border)]">
-      <!-- Giscus will be added in Phase 4 -->
-    </div>
+    <Giscus />
+
+    <!-- Code Block Copy Script -->
+    <CopyCode />
   </article>
 </BaseLayout>

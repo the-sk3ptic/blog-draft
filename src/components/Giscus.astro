@@ -1,0 +1,65 @@
+---
+interface Props {
+  repo?: string;
+  repoId?: string;
+  category?: string;
+  categoryId?: string;
+}
+
+// Sensible defaults or read from site config
+const {
+  repo = 'username/blog',
+  repoId = '',
+  category = 'Announcements',
+  categoryId = '',
+} = Astro.props;
+---
+
+<div class="giscus-container not-prose mt-12 pt-8 border-t border-[var(--color-border)]">
+  <h2 class="text-xl font-bold mb-6 flex items-center gap-2 text-[var(--color-text)]">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+    评论交流
+  </h2>
+
+  {
+    repoId && categoryId ? (
+      <div id="giscus-frame" />
+      <script
+        is:inline
+        src="https://giscus.app/client.js"
+        data-repo={repo}
+        data-repo-id={repoId}
+        data-category={category}
+        data-category-id={categoryId}
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async
+      />
+    ) : (
+      <div class="rounded-xl border border-dashed border-[var(--color-border)] p-6 text-center text-sm text-[var(--color-text-muted)] bg-[var(--color-surface-alt)]">
+        <p class="font-medium text-[var(--color-text-secondary)] mb-1">Giscus 评论系统已就绪</p>
+        <p>
+          在 GitHub 仓库开启 Discussions 后，前往{' '}
+          <a
+            href="https://giscus.app/zh-CN"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[var(--color-primary-600)] underline"
+          >
+            giscus.app
+          </a>{' '}
+          获取 <code>repoId</code> 和 <code>categoryId</code> 并填入配置即可开启。
+        </p>
+      </div>
+    )
+  }
+</div>

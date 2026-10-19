@@ -1,0 +1,62 @@
+<script is:inline>
+  function setupCopyButtons() {
+    const codeBlocks = document.querySelectorAll('pre');
+
+    codeBlocks.forEach((block) => {
+      // Avoid duplicate buttons
+      if (block.parentElement?.classList.contains('code-block-wrapper')) {
+        return;
+      }
+
+      // Create wrapper
+      const wrapper = document.createElement('div');
+      wrapper.className = 'code-block-wrapper relative group';
+      block.parentNode?.insertBefore(wrapper, block);
+      wrapper.appendChild(block);
+
+      // Create button
+      const button = document.createElement('button');
+      button.className =
+        'copy-button absolute top-2 right-2 px-2 py-1 text-xs rounded border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[var(--color-surface-hover)] focus:opacity-100 flex items-center gap-1 cursor-pointer';
+      button.setAttribute('aria-label', '复制代码');
+      button.innerHTML = `
+        <svg class="copy-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        <span class="copy-text">复制</span>
+      `;
+
+      button.addEventListener('click', async () => {
+        const code = block.querySelector('code')?.innerText || block.innerText;
+        try {
+          await navigator.clipboard.writeText(code);
+          button.classList.add('copied');
+          button.innerHTML = `
+            <svg class="check-icon text-emerald-500" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span class="copy-text text-emerald-500">已复制</span>
+          `;
+          setTimeout(() => {
+            button.classList.remove('copied');
+            button.innerHTML = `
+              <svg class="copy-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span class="copy-text">复制</span>
+            `;
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy code: ', err);
+        }
+      });
+
+      wrapper.appendChild(button);
+    });
+  }
+
+  // Setup on page load and on Astro view transition navigations
+  document.addEventListener('astro:page-load', setupCopyButtons);
+</script>

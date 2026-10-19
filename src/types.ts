@@ -22,5 +22,6 @@ export const NAV_ITEMS: NavItem[] = [
   { title: '标签', href: '/tags' },
   { title: '分类', href: '/categories' },
   { title: '归档', href: '/archive' },
+  { title: '搜索', href: '/search' },
   { title: '关于', href: '/about' },
 ];
