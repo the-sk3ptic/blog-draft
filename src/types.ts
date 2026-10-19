@@ -19,8 +19,9 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { title: '首页', href: '/' },
-  { title: '标签', href: '/tags' },
+  { title: '合集', href: '/series' },
   { title: '分类', href: '/categories' },
+  { title: '标签', href: '/tags' },
   { title: '归档', href: '/archive' },
   { title: '搜索', href: '/search' },
   { title: '关于', href: '/about' },

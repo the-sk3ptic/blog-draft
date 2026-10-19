@@ -10,6 +10,15 @@ const posts = defineCollection({
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
     category: z.string().optional(),
+    series: z
+      .union([
+        z.string().transform((name) => ({ name, order: 1 })),
+        z.object({
+          name: z.string(),
+          order: z.number().default(1),
+        }),
+      ])
+      .optional(),
     draft: z.boolean().default(false),
     image: z.string().optional(),
   }),

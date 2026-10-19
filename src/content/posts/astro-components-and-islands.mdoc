@@ -1,0 +1,52 @@
+---
+title: 'Astro 组件与 Islands 架构'
+description: '深入理解 Astro 的组件体系与客户端孤岛（Islands）架构。'
+pubDate: 2024-01-22
+tags: ['Astro', '前端', '架构']
+category: '技术'
+series:
+  name: 'Astro 零基础指南'
+  order: 2
+---
+
+# Astro 组件与 Islands 架构
+
+在上一篇《Astro 入门指南》中，我们对 Astro 的设计哲学有了基本认知。本篇将深入剖析其核心：**Islands 架构（组件孤岛）**。
+
+## 什么是 Islands 架构？
+
+Islands 架构的核心思想是：**将页面视作静态 HTML 的海洋，仅在必要处点缀具备客户端交互能力的动态小岛**。
+
+```astro
+---
+// Header 与 Footer 完全是服务端渲染的静态 HTML
+import Header from './Header.astro';
+import InteractiveCounter from './Counter.jsx';
+import Footer from './Footer.astro';
+---
+
+<Header />
+<main>
+  <h1>我的页面</h1>
+  <!-- 仅该计数器在客户端执行 JS -->
+  <InteractiveCounter client:visible />
+</main>
+<Footer />
+```
+
+## 客户端指令详解
+
+Astro 提供了丰富的 `client:*` 指令来精准控制 JS 的加载时机：
+
+1. `client:load`：页面加载时立即下载并激活。
+2. `client:idle`：在浏览器空闲时（requestIdleCallback）加载。
+3. `client:visible`：当组件滚动进入视口时才下载执行。
+4. `client:media="(max-width: 768px)"`：根据媒体查询条件加载。
+
+{% callout type="tip" title="性能建议" %}
+绝大多数交互组件推荐使用 `client:visible` 或 `client:idle`，这样能最大程度缩减初始页面的 TBT（Total Blocking Time）。
+{% /callout %}
+
+## 总结
+
+利用 Islands 架构，Astro 实现了极高的首屏速度与按需交互的平衡。在下一篇中我们将探讨更多高级特性。

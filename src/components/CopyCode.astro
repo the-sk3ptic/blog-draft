@@ -18,7 +18,8 @@
       const button = document.createElement('button');
       button.className =
         'copy-button absolute top-2 right-2 px-2 py-1 text-xs rounded border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[var(--color-surface-hover)] focus:opacity-100 flex items-center gap-1 cursor-pointer';
-      button.setAttribute('aria-label', '复制代码');
+      button.setAttribute('aria-label', '复制代码到剪贴板');
+      button.setAttribute('title', '复制代码到剪贴板');
       button.innerHTML = `
         <svg class="copy-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -32,6 +33,8 @@
         try {
           await navigator.clipboard.writeText(code);
           button.classList.add('copied');
+          button.setAttribute('title', '已成功复制到剪贴板');
+          button.setAttribute('aria-label', '已成功复制到剪贴板');
           button.innerHTML = `
             <svg class="check-icon text-emerald-500" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
@@ -40,6 +43,8 @@
           `;
           setTimeout(() => {
             button.classList.remove('copied');
+            button.setAttribute('title', '复制代码到剪贴板');
+            button.setAttribute('aria-label', '复制代码到剪贴板');
             button.innerHTML = `
               <svg class="copy-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>

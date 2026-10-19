@@ -42,24 +42,48 @@ const isoDate = pubDate instanceof Date ? pubDate.toISOString() : new Date(pubDa
 <article class="card">
   <div class="card-body">
     <div class="card-meta">
-      <time datetime={isoDate} class="card-date">
+      <time datetime={isoDate} class="card-date" title={`发布日期：${formattedDate}`}>
         {formattedDate}
       </time>
-      <span class="meta-separator">·</span>
-      <span class="reading-time">{readingTime}</span>
+      <span class="meta-separator" aria-hidden="true">·</span>
+      <span class="reading-time" title={`预计阅读时长：${readingTime}`}>{readingTime}</span>
       {category && (
-        <span class="category-badge">{category}</span>
+        <a
+          href={`/categories/${category}`}
+          class="category-badge hover:opacity-80 transition-opacity"
+          title={`查看分类「${category}」下的文章`}
+          aria-label={`分类：${category}`}
+        >
+          {category}
+        </a>
+      )}
+      {post?.data.series?.name && (
+        <a
+          href={`/series/${post.data.series.name}`}
+          class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-[var(--color-primary-50)] text-[var(--color-primary-700)] dark:bg-[var(--color-primary-950)] dark:text-[var(--color-primary-300)] border border-[var(--color-primary-200)] dark:border-[var(--color-primary-800)] hover:opacity-80 transition-opacity"
+          title={`收录于合集《${post.data.series.name}》`}
+          aria-label={`合集：${post.data.series.name}`}
+        >
+          <span>📚</span>
+          <span>{post.data.series.name}</span>
+        </a>
       )}
     </div>
 
     <h2 class="card-title">
-      <a href={`/posts/${slug}`}>{title}</a>
+      <a
+        href={`/posts/${slug}`}
+        title={`阅读文章：${title}`}
+        aria-label={`阅读文章：${title}`}
+      >
+        {title}
+      </a>
     </h2>
 
     <p class="card-description">{description}</p>
 
     {tags.length > 0 && (
-      <div class="card-tags">
+      <div class="card-tags" aria-label="文章标签">
         <TagList tags={tags} size="sm" />
       </div>
     )}

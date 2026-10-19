@@ -1,22 +1,24 @@
 ---
 import { render } from 'astro:content';
 import PostLayout from '@/layouts/PostLayout.astro';
-import { getPublishedPosts } from '@/utils/posts';
+import { getPublishedPosts, getSeriesNavigation } from '@/utils/posts';
 import { getReadingTime } from '@/utils/reading-time';
 
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
-  return posts.map((post, index) => ({
-    params: { slug: post.id },
-    props: {
-      post,
-      prevPost: index < posts.length - 1 ? posts[index + 1] : null,
-      nextPost: index > 0 ? posts[index - 1] : null,
-    },
-  }));
+  return posts.map((post) => {
+    const seriesNav = getSeriesNavigation(posts, post);
+    return {
+      params: { slug: post.id },
+      props: {
+        post,
+        seriesNav,
+      },
+    };
+  });
 }
 
-const { post, prevPost, nextPost } = Astro.props;
+const { post, seriesNav } = Astro.props;
 const { Content, headings } = await render(post);
 const readingTime = post.body ? getReadingTime(post.body) : '3 分钟';
 ---
@@ -25,8 +27,7 @@ const readingTime = post.body ? getReadingTime(post.body) : '3 分钟';
   frontmatter={post.data}
   headings={headings}
   readingTime={readingTime}
-  prevPost={prevPost ? { title: prevPost.data.title, slug: prevPost.id } : null}
-  nextPost={nextPost ? { title: nextPost.data.title, slug: nextPost.id } : null}
+  seriesNav={seriesNav}
 >
   <Content />
 </PostLayout>

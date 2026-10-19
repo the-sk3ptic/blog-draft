@@ -1,0 +1,79 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getPublishedPosts, getAllSeries, getPostsBySeries } from '@/utils/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const seriesMap = getAllSeries(posts);
+  return [...seriesMap.keys()].map((series) => ({
+    params: { series },
+    props: {
+      seriesName: series,
+      posts: getPostsBySeries(posts, series),
+    },
+  }));
+}
+
+const { seriesName, posts } = Astro.props;
+---
+
+<BaseLayout title={`合集：${seriesName}`} description={`合集《${seriesName}》的所有文章目录`}>
+  <div class="max-w-3xl mx-auto py-8">
+    <div class="mb-8">
+      <a
+        href="/series"
+        class="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-primary-600)] transition-colors"
+        title="返回所有专栏合集列表"
+        aria-label="返回专栏合集列表"
+      >
+        <span>←</span> 返回合集列表
+      </a>
+    </div>
+
+    <header class="mb-10 pb-8 border-b border-[var(--color-border)]">
+      <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-primary-600)] dark:text-[var(--color-primary-400)] mb-2">
+        <span>📚 专栏合集</span>
+      </div>
+      <h1 class="text-3xl font-bold mb-3 tracking-tight">{seriesName}</h1>
+      <p class="text-sm text-[var(--color-text-secondary)]">
+        共包含 {posts.length} 篇文章，建议按序号顺序阅读
+      </p>
+    </header>
+
+    <!-- Ordered Series Chapter List -->
+    <div class="space-y-4">
+      {posts.map((post, idx) => {
+        const date = new Date(post.data.pubDate).toLocaleDateString('zh-CN', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        });
+
+        return (
+          <a
+            href={`/posts/${post.id}`}
+            class="group p-5 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-primary-400)] hover:shadow-xs transition-all flex items-start gap-4"
+            title={`阅读第 ${idx + 1} 篇：${post.data.title}`}
+            aria-label={`第 ${idx + 1} 篇：${post.data.title}`}
+          >
+            <div class="w-8 h-8 rounded-lg bg-[var(--color-primary-50)] dark:bg-[var(--color-primary-950)] text-[var(--color-primary-600)] dark:text-[var(--color-primary-300)] font-bold text-sm flex items-center justify-center shrink-0 border border-[var(--color-primary-200)] dark:border-[var(--color-primary-800)]">
+              {idx + 1}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between text-xs text-[var(--color-text-muted)] mb-1">
+                <span>第 {idx + 1} 篇</span>
+                <time datetime={post.data.pubDate.toISOString()}>{date}</time>
+              </div>
+              <h2 class="text-base font-semibold text-[var(--color-text)] group-hover:text-[var(--color-primary-600)] transition-colors mb-1.5 truncate">
+                {post.data.title}
+              </h2>
+              <p class="text-xs text-[var(--color-text-secondary)] line-clamp-2">
+                {post.data.description}
+              </p>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</BaseLayout>

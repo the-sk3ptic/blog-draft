@@ -7,10 +7,15 @@ interface Props {
 const { tags, size = 'sm' } = Astro.props;
 ---
 
-<div class:list={['tag-list', `tag-${size}`]}>
+<div class:list={['tag-list', `tag-${size}`]} aria-label="标签列表">
   {tags.map((tag) => (
-    <a href={`/tags/${tag}`} class="tag-pill">
-      {tag}
+    <a
+      href={`/tags/${tag}`}
+      class="tag-pill"
+      title={`查看所有包含「${tag}」标签的文章`}
+      aria-label={`标签：${tag}`}
+    >
+      #{tag}
     </a>
   ))}
 </div>

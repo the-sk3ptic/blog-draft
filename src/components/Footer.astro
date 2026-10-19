@@ -8,12 +8,24 @@ const currentYear = new Date().getFullYear();
       &copy; {currentYear} My Blog. All rights reserved.
     </p>
     <div class="footer-links">
-      <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="footer-link">
+      <a
+        href="https://astro.build"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="footer-link"
+        title="前往 Astro 框架官方网站（在新窗口打开）"
+        aria-label="Astro 框架官网"
+      >
         Powered by Astro
       </a>
-      <span class="separator">·</span>
-      <a href="/rss.xml" class="footer-link">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:3px;">
+      <span class="separator" aria-hidden="true">·</span>
+      <a
+        href="/rss.xml"
+        class="footer-link"
+        title="通过 RSS 订阅本博客的最新文章更新"
+        aria-label="RSS 订阅源"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:3px;" aria-hidden="true">
           <path d="M4 11a9 9 0 0 1 9 9" /><path d="M4 4a16 16 0 0 1 16 16" /><circle cx="5" cy="19" r="1" />
         </svg>
         RSS

@@ -12,7 +12,9 @@ function isActive(href: string): boolean {
 
 <header class="header">
   <nav class="nav-container">
-    <a href="/" class="site-title">{SITE.title}</a>
+    <a href="/" class="site-title" title={`返回 ${SITE.title} 首页`} aria-label={`${SITE.title} 首页`}>
+      {SITE.title}
+    </a>
 
     <!-- Desktop nav -->
     <div class="nav-links">
@@ -20,6 +22,8 @@ function isActive(href: string): boolean {
         <a
           href={item.href}
           class:list={['nav-link', { active: isActive(item.href) }]}
+          title={`前往 ${item.title}`}
+          aria-label={item.title}
         >
           {item.title}
         </a>
@@ -32,11 +36,13 @@ function isActive(href: string): boolean {
       <ThemeToggle />
       <button
         class="hamburger"
-        aria-label="Toggle navigation menu"
+        aria-label="展开导航菜单"
+        title="展开导航菜单"
         aria-expanded="false"
+        aria-controls="mobile-menu"
         id="menu-toggle"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line class="line-1" x1="3" y1="6" x2="21" y2="6" />
           <line class="line-2" x1="3" y1="12" x2="21" y2="12" />
           <line class="line-3" x1="3" y1="18" x2="21" y2="18" />
@@ -46,11 +52,13 @@ function isActive(href: string): boolean {
   </nav>
 
   <!-- Mobile dropdown -->
-  <div class="mobile-menu" id="mobile-menu">
+  <div class="mobile-menu" id="mobile-menu" aria-label="移动端导航菜单">
     {NAV_ITEMS.map((item) => (
       <a
         href={item.href}
         class:list={['mobile-link', { active: isActive(item.href) }]}
+        title={`前往 ${item.title}`}
+        aria-label={item.title}
       >
         {item.title}
       </a>
@@ -65,8 +73,11 @@ function isActive(href: string): boolean {
     if (!toggle || !menu) return;
 
     toggle.addEventListener('click', () => {
-      const expanded = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', String(!expanded));
+      const willExpand = toggle.getAttribute('aria-expanded') !== 'true';
+      toggle.setAttribute('aria-expanded', String(willExpand));
+      const label = willExpand ? '收起导航菜单' : '展开导航菜单';
+      toggle.setAttribute('aria-label', label);
+      toggle.setAttribute('title', label);
       menu.classList.toggle('open');
     });
   });
