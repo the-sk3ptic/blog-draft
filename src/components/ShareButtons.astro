@@ -1,0 +1,190 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  url?: string;
+}
+
+const {
+  title,
+  description = '',
+  url = Astro.url.href,
+} = Astro.props;
+
+const encodedUrl = encodeURIComponent(url);
+const encodedTitle = encodeURIComponent(title);
+const encodedText = encodeURIComponent(`${title}${description ? ` - ${description}` : ''}`);
+
+const shareLinks = [
+  {
+    name: 'X (Twitter)',
+    href: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
+    label: `分享《${title}》到 X (Twitter)`,
+    icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+  },
+  {
+    name: '微博',
+    href: `https://service.weibo.com/share/share.php?url=${encodedUrl}&title=${encodedText}`,
+    label: `分享《${title}》到新浪微博`,
+    icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`,
+  },
+  {
+    name: 'Telegram',
+    href: `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`,
+    label: `分享《${title}》到 Telegram`,
+    icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`,
+  },
+  {
+    name: '邮件',
+    href: `mailto:?subject=${encodedTitle}&body=${encodedText}%0A%0A${encodedUrl}`,
+    label: `通过邮件分享《${title}》`,
+    icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>`,
+  },
+];
+---
+
+<div
+  class="share-container not-prose mt-10 pt-6 border-t border-[var(--color-border)] flex flex-wrap items-center justify-between gap-4"
+  aria-label="文章分享区域"
+>
+  <div class="flex items-center gap-2 text-sm font-medium text-[var(--color-text-secondary)]">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+    <span>分享文章</span>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-2">
+    {shareLinks.map((item) => (
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] hover:border-[var(--color-primary-400)] hover:bg-[var(--color-surface-hover)] transition-all"
+        title={item.label}
+        aria-label={item.label}
+      >
+        <Fragment set:html={item.icon} />
+        <span>{item.name}</span>
+      </a>
+    ))}
+
+    <!-- Copy Article Link Button -->
+    <button
+      type="button"
+      id="share-copy-link-btn"
+      data-share-url={url}
+      data-share-title={title}
+      data-share-desc={description}
+      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] hover:border-[var(--color-primary-400)] hover:bg-[var(--color-surface-hover)] transition-all cursor-pointer"
+      title="复制文章链接到剪贴板"
+      aria-label="复制文章链接到剪贴板"
+    >
+      <svg
+        id="share-copy-icon"
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      <span id="share-copy-text">复制链接</span>
+    </button>
+
+    <!-- Native Web Share Button (shown when supported by browser) -->
+    <button
+      type="button"
+      id="share-native-btn"
+      data-share-url={url}
+      data-share-title={title}
+      data-share-desc={description}
+      class="hidden items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--color-primary-300)] dark:border-[var(--color-primary-800)] bg-[var(--color-primary-50)]/60 dark:bg-[var(--color-primary-950)]/40 text-xs font-medium text-[var(--color-primary-700)] dark:text-[var(--color-primary-300)] hover:opacity-90 transition-all cursor-pointer"
+      title="调用系统原生分享菜单"
+      aria-label="调用系统原生分享菜单"
+    >
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+        <polyline points="16 6 12 2 8 6"></polyline>
+        <line x1="12" y1="2" x2="12" y2="15"></line>
+      </svg>
+      <span>系统分享</span>
+    </button>
+  </div>
+</div>
+
+<script is:inline>
+  function setupShareButtons() {
+    const copyBtn = document.getElementById('share-copy-link-btn');
+    const copyText = document.getElementById('share-copy-text');
+    const nativeBtn = document.getElementById('share-native-btn');
+
+    if (copyBtn && copyText) {
+      copyBtn.onclick = async () => {
+        const shareUrl = copyBtn.getAttribute('data-share-url') || window.location.href;
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          copyText.textContent = '已复制链接';
+          copyBtn.setAttribute('title', '文章链接已成功复制到剪贴板');
+          copyBtn.setAttribute('aria-label', '文章链接已成功复制到剪贴板');
+          copyBtn.classList.add('text-emerald-600', 'dark:text-emerald-400', 'border-emerald-500/50');
+          setTimeout(() => {
+            copyText.textContent = '复制链接';
+            copyBtn.setAttribute('title', '复制文章链接到剪贴板');
+            copyBtn.setAttribute('aria-label', '复制文章链接到剪贴板');
+            copyBtn.classList.remove('text-emerald-600', 'dark:text-emerald-400', 'border-emerald-500/50');
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy link:', err);
+        }
+      };
+    }
+
+    if (nativeBtn && typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      nativeBtn.classList.remove('hidden');
+      nativeBtn.classList.add('inline-flex');
+      nativeBtn.onclick = async () => {
+        const title = nativeBtn.getAttribute('data-share-title') || document.title;
+        const text = nativeBtn.getAttribute('data-share-desc') || '';
+        const url = nativeBtn.getAttribute('data-share-url') || window.location.href;
+        try {
+          await navigator.share({ title, text, url });
+        } catch (err) {
+          // User cancelled or share failed
+        }
+      };
+    }
+  }
+
+  document.addEventListener('astro:page-load', setupShareButtons);
+</script>

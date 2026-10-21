@@ -18,43 +18,42 @@ const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
 {
   toc.length > 0 && (
     <>
-      {/* 移动端/小屏幕：文章正文顶部的可折叠简易目录 */}
-      <div class="xl:hidden not-prose mb-8">
-        <details class="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-3 text-sm">
-          <summary
-            class="flex items-center justify-between cursor-pointer font-medium text-[var(--color-text)] select-none list-none"
-            aria-label="展开或收起文章目录"
-            title="展开或收起文章目录"
+      {/* 桌面端：Fixed 固定悬浮在文档右侧的目录导航 */}
+      <aside
+        class="hidden xl:block fixed top-24 right-5 2xl:right-[max(1.5rem,calc(50vw-41rem))] z-30 w-60 max-h-[calc(100vh-8rem)] overflow-y-auto p-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]/90 backdrop-blur-md shadow-sm not-prose"
+        aria-label="页面固定目录导航"
+      >
+        <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-3 pb-2 border-b border-[var(--color-border)]">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
           >
-            <span class="flex items-center gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="8" y1="6" x2="21" y2="6"></line>
-                <line x1="8" y1="12" x2="21" y2="12"></line>
-                <line x1="8" y1="18" x2="21" y2="18"></line>
-                <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                <line x1="3" y1="18" x2="3.01" y2="18"></line>
-              </svg>
-              文章目录
-            </span>
-            <svg
-              class="w-4 h-4 text-[var(--color-text-muted)] group-open:rotate-180 transition-transform duration-200"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </summary>
-          <ul class="mt-3 space-y-1.5 border-t border-[var(--color-border)] pt-3">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+          <span>目录导航</span>
+        </div>
+        <nav>
+          <ul class="space-y-1 text-sm border-l border-[var(--color-border)]">
             {toc.map((heading) => (
-              <li class={heading.depth === 3 ? 'pl-4 text-xs' : 'font-medium'}>
+              <li>
                 <a
                   href={`#${heading.slug}`}
-                  class="block py-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] transition-colors"
+                  class={`toc-link block py-1 border-l-2 -ml-[2px] border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] hover:border-[var(--color-primary-400)] transition-all ${
+                    heading.depth === 3 ? 'pl-5 text-xs' : 'pl-3 font-normal'
+                  }`}
+                  data-slug={heading.slug}
                   title={`跳转到小节：${heading.text}`}
                   aria-label={`跳转到小节：${heading.text}`}
                 >
@@ -63,25 +62,57 @@ const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
               </li>
             ))}
           </ul>
-        </details>
-      </div>
+        </nav>
+      </aside>
 
-      {/* 桌面端：Floating 悬浮在文档右侧的目录导航 */}
-      <aside
-        class="hidden xl:block w-64 shrink-0 not-prose"
-        aria-label="页面目录导航"
-      >
-        <div class="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2">
-          <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-3 pb-2 border-b border-[var(--color-border)]">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="8" y1="6" x2="21" y2="6"></line>
-              <line x1="8" y1="12" x2="21" y2="12"></line>
-              <line x1="8" y1="18" x2="21" y2="18"></line>
-              <line x1="3" y1="6" x2="3.01" y2="6"></line>
-              <line x1="3" y1="12" x2="3.01" y2="12"></line>
-              <line x1="3" y1="18" x2="3.01" y2="18"></line>
-            </svg>
-            目录导航
+      {/* 小屏/移动端：右下角 Fixed 悬浮目录按钮与弹窗 */}
+      <div class="xl:hidden not-prose">
+        <button
+          type="button"
+          id="toc-mobile-toggle"
+          aria-expanded="false"
+          aria-controls="toc-mobile-panel"
+          title="展开或收起悬浮文章目录"
+          aria-label="展开或收起悬浮文章目录"
+          class="fixed bottom-6 right-6 z-40 inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur-md text-xs font-medium text-[var(--color-text)] shadow-lg hover:border-[var(--color-primary-400)] transition-all cursor-pointer"
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+          <span>目录</span>
+        </button>
+
+        <aside
+          id="toc-mobile-panel"
+          aria-label="移动端悬浮文章目录"
+          class="hidden fixed bottom-18 right-6 z-40 w-64 max-h-[60vh] overflow-y-auto p-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur-md shadow-xl"
+        >
+          <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-2.5 pb-2 border-b border-[var(--color-border)]">
+            <span>文章目录</span>
+            <button
+              type="button"
+              id="toc-mobile-close"
+              class="p-0.5 text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer"
+              title="关闭目录弹窗"
+              aria-label="关闭目录弹窗"
+            >
+              ✕
+            </button>
           </div>
           <nav>
             <ul class="space-y-1 text-sm border-l border-[var(--color-border)]">
@@ -89,8 +120,8 @@ const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
                 <li>
                   <a
                     href={`#${heading.slug}`}
-                    class={`toc-desktop-link block py-1 border-l-2 -ml-[2px] border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] hover:border-[var(--color-primary-400)] transition-all ${
-                      heading.depth === 3 ? 'pl-6 text-xs' : 'pl-3 font-normal'
+                    class={`toc-link toc-mobile-item block py-1 border-l-2 -ml-[2px] border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] transition-all ${
+                      heading.depth === 3 ? 'pl-5 text-xs' : 'pl-3 font-normal'
                     }`}
                     data-slug={heading.slug}
                     title={`跳转到小节：${heading.text}`}
@@ -102,21 +133,52 @@ const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
               ))}
             </ul>
           </nav>
-        </div>
-      </aside>
+        </aside>
+      </div>
     </>
   )
 }
 
-<script>
-  function setupDesktopTOCActiveState() {
-    const links = document.querySelectorAll('.toc-desktop-link');
+<script is:inline>
+  function setupTOC() {
+    const links = document.querySelectorAll('.toc-link');
     if (!links.length) return;
 
-    const headingElements: HTMLElement[] = [];
+    // Mobile fixed floating TOC toggle
+    const mobileToggle = document.getElementById('toc-mobile-toggle');
+    const mobilePanel = document.getElementById('toc-mobile-panel');
+    const mobileClose = document.getElementById('toc-mobile-close');
+
+    if (mobileToggle && mobilePanel) {
+      mobileToggle.onclick = () => {
+        const isHidden = mobilePanel.classList.toggle('hidden');
+        mobileToggle.setAttribute('aria-expanded', String(!isHidden));
+      };
+    }
+
+    if (mobileClose && mobilePanel && mobileToggle) {
+      mobileClose.onclick = () => {
+        mobilePanel.classList.add('hidden');
+        mobileToggle.setAttribute('aria-expanded', 'false');
+      };
+    }
+
+    document.querySelectorAll('.toc-mobile-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        if (mobilePanel && mobileToggle) {
+          mobilePanel.classList.add('hidden');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+
+    // Collect unique heading elements in document order
+    const seenSlugs = new Set();
+    const headingElements = [];
     links.forEach((link) => {
       const slug = link.getAttribute('data-slug');
-      if (slug) {
+      if (slug && !seenSlugs.has(slug)) {
+        seenSlugs.add(slug);
         const el = document.getElementById(slug);
         if (el) headingElements.push(el);
       }
@@ -126,7 +188,7 @@ const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
 
     function onScroll() {
       const scrollPosition = window.scrollY + 120;
-      let currentActiveSlug = '';
+      let currentActiveSlug = headingElements[0].id;
 
       for (let i = 0; i < headingElements.length; i++) {
         const heading = headingElements[i];
@@ -162,5 +224,5 @@ const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
     onScroll();
   }
 
-  document.addEventListener('astro:page-load', setupDesktopTOCActiveState);
+  document.addEventListener('astro:page-load', setupTOC);
 </script>

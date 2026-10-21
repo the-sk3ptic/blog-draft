@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TOC from '@/components/TOC.astro';
 import CopyCode from '@/components/CopyCode.astro';
+import ShareButtons from '@/components/ShareButtons.astro';
 import Giscus from '@/components/Giscus.astro';
 import type { HeadingItem } from '@/components/TOC.astro';
 import type { SeriesNav } from '@/utils/posts';
@@ -26,7 +27,8 @@ interface Props {
 }
 
 const { frontmatter, headings = [], readingTime, seriesNav } = Astro.props;
-const { title, description, pubDate, updatedDate, tags, category, series, image } = frontmatter;
+const { title, description, pubDate, updatedDate, tags, category, image } = frontmatter;
+const hasTOC = headings && headings.filter((h) => h.depth > 1 && h.depth < 4).length > 0;
 
 const formattedDate = new Date(pubDate).toLocaleDateString('zh-CN', {
   year: 'numeric',
@@ -47,6 +49,11 @@ const formattedUpdatedDate = updatedDate
   title={title}
   description={description}
   image={image}
+  type="article"
+  pubDate={pubDate}
+  updatedDate={updatedDate}
+  tags={tags}
+  category={category}
   containerClass="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full"
 >
   <div class="flex flex-col xl:flex-row justify-center items-start gap-10">
@@ -124,26 +131,22 @@ const formattedUpdatedDate = updatedDate
         )}
       </header>
 
-      {/* Mobile inline TOC (collapsible) */}
-      {headings && headings.length > 0 && (
-        <div class="xl:hidden">
-          <TOC headings={headings} />
-        </div>
-      )}
-
       <!-- Article Body -->
       <div class="prose prose-lg dark:prose-invert max-w-none">
         <slot />
       </div>
 
+      <!-- Article Social Share Section -->
+      <ShareButtons title={title} description={description} />
+
       <!-- Intra-Series Navigation (Only for series posts) -->
       {seriesNav && (seriesNav.prevPost || seriesNav.nextPost) && (
         <nav
-          class="mt-12 pt-8 border-t border-[var(--color-border)]"
+          class="mt-10 pt-8 border-t border-[var(--color-border)]"
           aria-label="合集文章导航"
         >
           <div class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-4 flex items-center gap-1.5">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
             </svg>
@@ -193,11 +196,10 @@ const formattedUpdatedDate = updatedDate
       <CopyCode />
     </article>
 
-    <!-- Desktop Floating Right Sidebar TOC -->
-    {headings && headings.length > 0 && (
-      <div class="hidden xl:block">
-        <TOC headings={headings} />
-      </div>
-    )}
+    <!-- Spacer to reserve horizontal room for the fixed right TOC on desktop -->
+    {hasTOC && <div class="hidden xl:block w-60 shrink-0" aria-hidden="true" />}
   </div>
+
+  <!-- Fixed Right TOC (Desktop fixed right sidebar + Mobile fixed floating drawer) -->
+  {hasTOC && <TOC headings={headings} />}
 </BaseLayout>
