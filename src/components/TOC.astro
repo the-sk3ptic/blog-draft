@@ -144,6 +144,8 @@ const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
     const links = document.querySelectorAll('.toc-link');
     if (!links.length) return;
 
+    const scrollContainer = document.getElementById('main-scroll-container');
+
     // Mobile fixed floating TOC toggle
     const mobileToggle = document.getElementById('toc-mobile-toggle');
     const mobilePanel = document.getElementById('toc-mobile-panel');
@@ -163,9 +165,27 @@ const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
       };
     }
 
-    document.querySelectorAll('.toc-mobile-item').forEach((item) => {
-      item.addEventListener('click', () => {
-        if (mobilePanel && mobileToggle) {
+    // Smooth scroll inside #main-scroll-container with uniform top gap below navbar
+    links.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        const slug = link.getAttribute('data-slug');
+        if (!slug) return;
+        const targetEl = document.getElementById(slug);
+        if (!targetEl) return;
+
+        e.preventDefault();
+        if (scrollContainer) {
+          const containerTop = scrollContainer.getBoundingClientRect().top;
+          const targetTop = targetEl.getBoundingClientRect().top;
+          const offset = scrollContainer.scrollTop + (targetTop - containerTop) - 20;
+          scrollContainer.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
+        } else {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        history.replaceState(history.state, '', `#${slug}`);
+
+        if (mobilePanel && mobileToggle && link.classList.contains('toc-mobile-item')) {
           mobilePanel.classList.add('hidden');
           mobileToggle.setAttribute('aria-expanded', 'false');
         }
@@ -187,7 +207,10 @@ const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
     if (!headingElements.length) return;
 
     function onScroll() {
-      const offsetThreshold = 100; // Slightly below 5rem (80px) scroll-margin-top
+      const containerTop = scrollContainer
+        ? scrollContainer.getBoundingClientRect().top
+        : 0;
+      const offsetThreshold = containerTop + 40;
       let currentActiveSlug = headingElements[0].id;
 
       for (let i = 0; i < headingElements.length; i++) {
@@ -220,6 +243,9 @@ const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
       });
     }
 
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', onScroll, { passive: true });
+    }
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   }

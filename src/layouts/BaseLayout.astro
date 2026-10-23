@@ -46,11 +46,15 @@ const {
       author={author}
     />
   </head>
-  <body class="min-h-screen flex flex-col bg-[var(--color-surface)] text-[var(--color-text)]">
-    <Header />
-    <main class:list={['flex-1', containerClass]}>
-      <slot />
-    </main>
-    <Footer />
+  <body class="h-dvh overflow-hidden flex flex-col bg-[var(--color-surface)] text-[var(--color-text)]">
+    <div class="shrink-0 z-50">
+      <Header />
+    </div>
+    <div id="main-scroll-container" class="flex-1 overflow-y-auto scroll-smooth flex flex-col">
+      <main class:list={['flex-1', containerClass]}>
+        <slot />
+      </main>
+      <Footer />
+    </div>
   </body>
 </html>
