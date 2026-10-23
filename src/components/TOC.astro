@@ -187,12 +187,12 @@ const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
     if (!headingElements.length) return;
 
     function onScroll() {
-      const scrollPosition = window.scrollY + 120;
+      const offsetThreshold = 100; // Slightly below 5rem (80px) scroll-margin-top
       let currentActiveSlug = headingElements[0].id;
 
       for (let i = 0; i < headingElements.length; i++) {
         const heading = headingElements[i];
-        if (heading.offsetTop <= scrollPosition) {
+        if (heading.getBoundingClientRect().top <= offsetThreshold) {
           currentActiveSlug = heading.id;
         } else {
           break;

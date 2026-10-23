@@ -66,6 +66,13 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+/* Prevent sticky navbar from covering anchor targets and headings */
+:target,
+.prose :where(h1, h2, h3, h4, h5, h6)[id] {
+  scroll-margin-top: 5rem;
 }
 
 body {
