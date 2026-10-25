@@ -4,6 +4,7 @@ import TOC from '@/components/TOC.astro';
 import CopyCode from '@/components/CopyCode.astro';
 import ShareButtons from '@/components/ShareButtons.astro';
 import Giscus from '@/components/Giscus.astro';
+import BackToTop from '@/components/BackToTop.astro';
 import type { HeadingItem } from '@/components/TOC.astro';
 import type { SeriesNav } from '@/utils/posts';
 
@@ -202,4 +203,7 @@ const formattedUpdatedDate = updatedDate
 
   <!-- Fixed Right TOC (Desktop fixed right sidebar + Mobile fixed floating drawer) -->
   {hasTOC && <TOC headings={headings} />}
+
+  <!-- Back to top button -->
+  <BackToTop />
 </BaseLayout>
