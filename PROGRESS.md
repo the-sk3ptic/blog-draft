@@ -62,7 +62,7 @@
 - [ ] **视觉微调与主题配色**：根据实际审美对卡片圆角、字体组合、配色方案进行个性化调优
 - [ ] **Giscus 评论开通**：在 GitHub 仓库开启 Discussions，填入 `repoId` 与 `categoryId` 正式开启读者评论
 - [ ] **图文 Lightbox 弹窗**：为博文正文配图添加点击放大预览能力
-- [ ] **转为 Public 并上线**：按照交接指引将私有库转为 Public，开启 GitHub Pages 自动化构建上线
+- [ ] **转为 Public 并上线**：按照指引将私有库转为 Public，并在 `.github/workflows/deploy.yml` 取消 push 与 deploy 注释，触发 GitHub Pages 自动上线
 - [ ] **Phase 4 内容后台管理 (可选)**：接入 Tina CMS 或 Keystatic 进行在线可视化编辑
 - [ ] **多语言 i18n (可选)**：预留架构扩展英文版博文
 
