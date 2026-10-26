@@ -8,6 +8,8 @@ interface Props {
   title?: string;
   description?: string;
   pubDate?: Date;
+  updatedDate?: Date;
+  lastModified?: Date;
   tags?: string[];
   slug?: string;
   category?: string;
@@ -19,11 +21,15 @@ const {
   title = post?.data.title ?? '',
   description = post?.data.description ?? '',
   pubDate = post?.data.pubDate ?? new Date(),
+  updatedDate = post?.data.updatedDate,
+  lastModified = post?.data.lastModified,
   tags = post?.data.tags ?? [],
   slug = post?.id ?? '',
   category = post?.data.category,
   readingTime = post?.body ? getReadingTime(post.body) : '3 分钟',
 } = Astro.props;
+
+const effectiveUpdatedDate = updatedDate ?? lastModified;
 
 const formattedDate = pubDate instanceof Date
   ? pubDate.toLocaleDateString('zh-CN', {
@@ -37,14 +43,37 @@ const formattedDate = pubDate instanceof Date
       day: 'numeric',
     });
 const isoDate = pubDate instanceof Date ? pubDate.toISOString() : new Date(pubDate).toISOString();
+
+const formattedUpdatedDate = effectiveUpdatedDate
+  ? (effectiveUpdatedDate instanceof Date
+      ? effectiveUpdatedDate
+      : new Date(effectiveUpdatedDate)
+    ).toLocaleDateString('zh-CN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  : null;
 ---
 
 <article class="card">
   <div class="card-body">
     <div class="card-meta">
-      <time datetime={isoDate} class="card-date" title={`发布日期：${formattedDate}`}>
+      <time
+        datetime={isoDate}
+        class="card-date"
+        title={formattedUpdatedDate ? `发布日期：${formattedDate}（最后编辑：${formattedUpdatedDate}）` : `发布日期：${formattedDate}`}
+      >
         {formattedDate}
       </time>
+      {formattedUpdatedDate && (
+        <span
+          class="card-updated"
+          title={`最后编辑于 ${formattedUpdatedDate}`}
+        >
+          (已编辑)
+        </span>
+      )}
       <span class="meta-separator" aria-hidden="true">·</span>
       <span class="reading-time" title={`预计阅读时长：${readingTime}`}>{readingTime}</span>
       {category && (
@@ -128,6 +157,12 @@ const isoDate = pubDate instanceof Date ? pubDate.toISOString() : new Date(pubDa
 
   .reading-time {
     color: var(--color-text-muted);
+  }
+
+  .card-updated {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-style: italic;
   }
 
   .category-badge {
