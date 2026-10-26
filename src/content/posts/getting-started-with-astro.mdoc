@@ -32,13 +32,21 @@ Astro 天然支持 Markdown、MDX 和 Markdoc，非常适合构建博客和文�
 
 当你需要交互时，Astro 的「组件岛屿」架构让你可以只在需要的地方加载 JavaScript：
 
-```astro
+```astro {% title="src/pages/index.astro" %}
 ---
 import InteractiveWidget from './Widget.jsx';
 ---
 
 <p>这段文字是纯 HTML。</p>
 <InteractiveWidget client:visible />
+```
+
+## 快速开始
+
+通过终端命令可以快速创建一个全新的 Astro 项目（无标题代码块示例）：
+
+```bash
+pnpm create astro@latest
 ```
 
 ## 项目结构
