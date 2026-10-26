@@ -1,10 +1,8 @@
 name: Deploy to GitHub Pages
 
 on:
-  # [开发阶段已注释] 在私有仓库开发阶段禁用 push 自动触发，避免 GitHub Actions 因缺少 Pages 环境产生失败红叉
-  # 待项目转为 Public 并开启 GitHub Pages 后，取消下方 2 行注释即可恢复自动构建与部署
-  # push:
-  #   branches: [main, master]
+  push:
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
@@ -45,13 +43,12 @@ jobs:
         with:
           path: dist/
 
-  # [开发阶段已注释] 待仓库转为 Public 后取消以下注释
-  # deploy:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   environment:
-  #     name: github-pages
-  #     url: ${{ github.event.repository.html_url }}
-  #   steps:
-  #     - name: Deploy to GitHub Pages
-  #       uses: actions/deploy-pages@v4
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ github.event.repository.html_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
