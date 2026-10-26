@@ -1,0 +1,53 @@
+---
+import { Code } from 'astro:components';
+
+interface Props {
+  content?: string;
+  language?: string;
+  title?: string;
+}
+
+let { content = '', language = 'plaintext', title } = Astro.props;
+
+if (!content && Astro.slots.has('default')) {
+  content = await Astro.slots.render('default');
+}
+
+if (!title && language && language.includes(':')) {
+  const colonIdx = language.indexOf(':');
+  title = language.slice(colonIdx + 1);
+  language = language.slice(0, colonIdx);
+}
+
+const lang = language ? language.trim() : 'plaintext';
+---
+
+<div class={`code-block-wrapper relative group my-6 rounded-xl border border-[var(--color-border)] overflow-hidden bg-[var(--color-surface-alt)] shadow-xs ${title ? 'has-title' : ''}`}>
+  {title && (
+    <div class="code-block-header flex items-center justify-between px-4 py-2 border-b border-[var(--color-border)] bg-[var(--color-surface)] dark:bg-[var(--color-surface-alt)] text-xs text-[var(--color-text-secondary)] font-mono">
+      <div class="flex items-center gap-2 font-medium truncate">
+        <svg class="w-3.5 h-3.5 text-[var(--color-text-muted)] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <span class="truncate">{title}</span>
+      </div>
+      <div class="code-block-actions flex items-center gap-2">
+        {language && language !== 'plaintext' && (
+          <span class="text-[10px] uppercase font-semibold text-[var(--color-text-muted)] tracking-wider px-1.5 py-0.5 rounded bg-[var(--color-surface-hover)]">
+            {language}
+          </span>
+        )}
+      </div>
+    </div>
+  )}
+  <Code
+    code={content.trimEnd()}
+    lang={lang as any}
+    themes={{
+      light: 'github-light',
+      dark: 'github-dark',
+    }}
+    defaultColor={false}
+  />
+</div>
