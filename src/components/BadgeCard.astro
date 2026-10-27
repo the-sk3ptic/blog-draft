@@ -1,0 +1,329 @@
+---
+export interface BadgeItem {
+  title: string;
+  issuer: string;
+  issueDate: string;
+  expiryDate?: string;
+  credentialId?: string;
+  badgeImage?: string;
+  verifyUrl: string;
+  skills?: string[];
+  platform?: string;
+}
+
+interface Props {
+  badge: BadgeItem;
+}
+
+const { badge } = Astro.props;
+const {
+  title,
+  issuer,
+  issueDate,
+  expiryDate,
+  credentialId,
+  badgeImage,
+  verifyUrl,
+  skills = [],
+  platform = 'Credly',
+} = badge;
+---
+
+<div class="badge-card">
+  <div class="badge-header">
+    <span class="badge-platform-tag" title={`由 ${platform} 权威机构认证`}>
+      <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+      </svg>
+      {platform} 认证
+    </span>
+    {credentialId && (
+      <span class="badge-id" title={`凭证编号：${credentialId}`}>
+        ID: {credentialId}
+      </span>
+    )}
+  </div>
+
+  <div class="badge-main">
+    <div class="badge-visual">
+      {badgeImage ? (
+        <img
+          src={badgeImage}
+          alt={`${title} 资质徽章`}
+          class="badge-image"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <div class="badge-fallback" aria-label={`${title} 徽章图标`}>
+          <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+      )}
+    </div>
+
+    <div class="badge-info">
+      <h3 class="badge-title">
+        <a
+          href={verifyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="badge-title-link"
+          title={`在新标签页查看「${title}」验证页面`}
+          aria-label={`验证「${title}」证书（新标签页打开）`}
+        >
+          {title}
+        </a>
+      </h3>
+
+      <p class="badge-issuer" title={`发证机构：${issuer}`}>
+        {issuer}
+      </p>
+
+      <div class="badge-dates">
+        <span class="badge-date" title={`获得时间：${issueDate}`}>
+          <svg class="date-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+          </svg>
+          {issueDate}
+        </span>
+        {expiryDate && (
+          <span class="badge-expiry" title={`有效期截止：${expiryDate}`}>
+            · 有效期至 {expiryDate}
+          </span>
+        )}
+      </div>
+    </div>
+  </div>
+
+  {skills.length > 0 && (
+    <div class="badge-skills" aria-label="相关技术技能标签">
+      {skills.map((skill) => (
+        <span class="skill-tag">#{skill}</span>
+      ))}
+    </div>
+  )}
+
+  <div class="badge-footer">
+    <a
+      href={verifyUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="verify-link"
+      title={`在 ${platform} 官方平台查看「${title}」的真伪核验`}
+      aria-label={`在 ${platform} 核验 ${title} 凭证`}
+    >
+      <span>验证官方凭证</span>
+      <svg class="link-arrow" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+      </svg>
+    </a>
+  </div>
+</div>
+
+<style>
+  .badge-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .badge-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-border-hover);
+    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.08);
+  }
+
+  .badge-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .badge-platform-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-primary-600, #2563eb);
+    background-color: var(--color-primary-50, #eff6ff);
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+  }
+
+  :global(.dark) .badge-platform-tag {
+    color: var(--color-primary-300, #93c5fd);
+    background-color: rgba(37, 99, 235, 0.15);
+  }
+
+  .check-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .badge-id {
+    font-size: 0.75rem;
+    font-family: var(--font-mono, monospace);
+    color: var(--color-text-muted);
+  }
+
+  .badge-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .badge-visual {
+    flex-shrink: 0;
+    width: 4.5rem;
+    height: 4.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    background-color: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    padding: 0.375rem;
+    overflow: hidden;
+  }
+
+  .badge-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.25s ease;
+  }
+
+  .badge-card:hover .badge-image {
+    transform: scale(1.05);
+  }
+
+  .badge-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary-500);
+  }
+
+  .badge-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .badge-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .badge-title {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .badge-title-link {
+    color: var(--color-text);
+    text-decoration: none;
+    transition: color var(--transition-base);
+  }
+
+  .badge-title-link:hover {
+    color: var(--color-primary-500);
+  }
+
+  .badge-issuer {
+    margin: 0 0 0.375rem 0;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .badge-dates {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .badge-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .date-icon {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .badge-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.875rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--color-border);
+  }
+
+  .skill-tag {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.375rem;
+    background-color: var(--color-surface-alt);
+    color: var(--color-text-secondary);
+  }
+
+  .badge-footer {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .verify-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-primary-500);
+    text-decoration: none;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    background-color: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    transition: all var(--transition-base);
+  }
+
+  .verify-link:hover {
+    background-color: var(--color-surface-hover);
+    color: var(--color-primary-600, #1d4ed8);
+    border-color: var(--color-border-hover);
+    transform: translateX(1px);
+  }
+
+  .link-arrow {
+    width: 0.875rem;
+    height: 0.875rem;
+    transition: transform var(--transition-base);
+  }
+
+  .verify-link:hover .link-arrow {
+    transform: translate(1px, -1px);
+  }
+</style>

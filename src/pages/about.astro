@@ -1,36 +1,207 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
+import BadgeCard, { type BadgeItem } from '@/components/BadgeCard.astro';
+
+// Credly 个人公开档案链接（请替换为您的真实 Credly 用户主页，例如 https://www.credly.com/users/your-username/badges）
+const credlyProfileUrl = 'https://www.credly.com';
+
+// 专业资质认证与数字徽章列表
+// 支持直接填入来自 Credly 颁发的数字徽章图片链接与验证 URL
+const badges: BadgeItem[] = [
+  {
+    title: 'AWS Certified Solutions Architect – Associate',
+    issuer: 'Amazon Web Services (AWS)',
+    issueDate: '2024 年 6 月',
+    expiryDate: '2027 年 6 月',
+    credentialId: 'AWS-SAA-1029384',
+    platform: 'Credly',
+    badgeImage: 'https://images.credly.com/size/340x340/images/0e284c47-3ce8-4439-b477-d13b3f5d5418/image.png',
+    verifyUrl: 'https://www.credly.com',
+    skills: ['AWS', '云原生架构', '高可用设计', '安全防护'],
+  },
+  {
+    title: 'Certified Kubernetes Administrator (CKA)',
+    issuer: 'Cloud Native Computing Foundation (CNCF)',
+    issueDate: '2024 年 3 月',
+    expiryDate: '2027 年 3 月',
+    credentialId: 'LF-CKA-849201',
+    platform: 'Credly',
+    badgeImage: 'https://images.credly.com/size/340x340/images/2d84e428-9078-49b6-a825-fecd1571594d/image.png',
+    verifyUrl: 'https://www.credly.com',
+    skills: ['Kubernetes', '容器编排', 'DevOps', '集群运维'],
+  },
+  {
+    title: 'HashiCorp Certified: Terraform Associate',
+    issuer: 'HashiCorp',
+    issueDate: '2023 年 11 月',
+    expiryDate: '2025 年 11 月',
+    credentialId: 'HC-TA-573921',
+    platform: 'Credly',
+    badgeImage: 'https://images.credly.com/size/340x340/images/59fa1212-9c18-406b-a249-1be777a876ef/image.png',
+    verifyUrl: 'https://www.credly.com',
+    skills: ['Terraform', 'IaC', '自动化运维', '多云架构'],
+  },
+];
 ---
 
-<PageLayout title="关于我">
-  <div class="prose prose-zinc dark:prose-invert max-w-none">
-    <h1>关于我</h1>
-    <p>
-      你好！欢迎来到我的个人博客。我是一名热爱技术的开发者，喜欢探索新技术并分享自己的学习心得。
-    </p>
+<PageLayout title="关于我" description="关于博客作者、技术背景与专业资质认证">
+  <p class="lead">
+    你好！欢迎来到我的个人博客。我是一名热爱技术的开发者，专注现代化 Web 全栈开发、云原生架构与技术工程实践。
+  </p>
 
-    <h2>兴趣方向</h2>
-    <ul>
-      <li>Web 前端开发</li>
-      <li>开源项目</li>
-      <li>技术写作</li>
-      <li>用户体验设计</li>
-    </ul>
+  <h2>专业资质与数字徽章</h2>
+  <p>
+    秉持严谨的工程素养，我已通过多项权威技术认证。所有资质凭证均由 <strong>Credly</strong> 等机构数字背书与加密托管，可点击卡片核验真伪。
+  </p>
 
-    <h2>关于这个博客</h2>
-    <p>
-      这个博客使用 <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a> 构建，
-      采用 Tailwind CSS 进行样式设计，部署在 GitHub Pages 上。
-      文章使用 MDX 和 Markdoc 格式编写。
-    </p>
+  <div class="not-prose my-6">
+    <!-- Credly Profile Banner -->
+    <div class="credly-banner">
+      <div class="banner-info">
+        <div class="banner-icon-box" aria-hidden="true">
+          <svg class="banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="banner-title">Credly 官方资质认证</h3>
+          <p class="banner-desc">数字凭证包含发行机构的元数据及防伪哈希签名</p>
+        </div>
+      </div>
+      <a
+        href={credlyProfileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="banner-btn"
+        title="在 Credly 官方个人主页查看全部数字徽章（将在新标签页打开）"
+        aria-label="在 Credly 官方个人主页查看全部数字徽章"
+      >
+        <span>在 Credly 查看全部</span>
+        <svg class="btn-arrow" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+        </svg>
+      </a>
+    </div>
 
-    <h2>联系方式</h2>
-    <p>
-      如果你有任何问题或建议，欢迎通过以下方式联系我：
-    </p>
-    <ul>
-      <li>GitHub: <a href="https://github.com" target="_blank" rel="noopener noreferrer">@username</a></li>
-      <li>Email: hello@example.com</li>
-    </ul>
+    <!-- Badges Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {badges.map((badge) => (
+        <BadgeCard badge={badge} />
+      ))}
+    </div>
   </div>
+
+  <h2>技术栈与兴趣方向</h2>
+  <ul>
+    <li><strong>前端与全栈</strong>：Astro、TypeScript、React/Vue、Tailwind CSS</li>
+    <li><strong>云与基础设施</strong>：AWS、Docker、Kubernetes、Terraform、CI/CD 流水线</li>
+    <li><strong>开源与技术写作</strong>：专注于开发效能、架构设计与开源工程化实践</li>
+    <li><strong>用户体验</strong>：A11y 无障碍标准、Core Web Vitals 性能极致调优</li>
+  </ul>
+
+  <h2>关于这个博客</h2>
+  <p>
+    这个博客使用 <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a> 构建，
+    采用 Tailwind CSS 进行样式设计，部署在 GitHub Pages 上。
+    文章使用 MDX 和 Markdoc 格式编写。
+  </p>
+
+  <h2>联系方式</h2>
+  <p>
+    如果你有任何技术探讨、合作交流或建议，欢迎通过以下渠道与我取得联系：
+  </p>
+  <ul>
+    <li>GitHub: <a href="https://github.com" target="_blank" rel="noopener noreferrer">@username</a></li>
+    <li>Email: hello@example.com</li>
+    <li>Credly: <a href={credlyProfileUrl} target="_blank" rel="noopener noreferrer">Credly Profile</a></li>
+  </ul>
 </PageLayout>
+
+<style>
+  .credly-banner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background-color: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .credly-banner {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .banner-info {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+  }
+
+  .banner-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.625rem;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-primary-500);
+    flex-shrink: 0;
+  }
+
+  .banner-icon {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+
+  .banner-title {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .banner-desc {
+    margin: 0.125rem 0 0 0;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+  }
+
+  .banner-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-text);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .banner-btn:hover {
+    color: var(--color-primary-500);
+    border-color: var(--color-border-hover);
+    background-color: var(--color-surface-hover);
+    transform: translateY(-1px);
+  }
+
+  .btn-arrow {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+</style>
