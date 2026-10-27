@@ -33,8 +33,16 @@
   - 搜索引擎 Sitemap (`sitemap-index.xml`)
 
 ### 2. 阅读体验与深度交互 (Phase 2)
-- [x] **Shiki 双主题代码高亮**：浅色模式 `github-light`，深色模式 `github-dark`，深色模式 CSS 变量强制覆盖
-- [x] **代码块一键复制**：全代码块自动注入悬浮“复制代码”按钮，带“已复制”即时视觉反馈
+- [x] **文章时效性提示横幅与修改时间戳**：
+  - Schema 支持 `lastModified` 与灵活的 `banner`（支持布尔、自定义文本或结构化类型）
+  - 实现自适应明暗模式的 `ArticleBanner` 组件，在文章开头醒目提示内容更新状态与技术时效性
+  - 文章详情页与卡片列表同步展示最后编辑时间，并联动 SEO JSON-LD / OpenGraph
+- [x] **Shiki 双主题代码高亮与可选标题（Title）**：
+  - Markdoc (`.mdoc`) 自定义 `fence` 节点无缝集成 Shiki 双主题高亮，自动识别并高亮文档中记录的代码语言（astro, typescript, bash 等）
+  - MDX (`.mdx`) 与 Markdoc (`.mdoc`) 统一支持代码块可选标题字段（支持 `title="..."`、`{% title="..." %}` 及 `lang:filename` 语法）
+  - 顶置标题栏展示文件图标、标题名称、大写语言指示徽章与紧凑复制按钮
+  - 无标题代码块平滑降级为极简悬浮复制按钮，保持视觉干净统一
+- [x] **代码块一键复制**：全代码块自动注入悬浮/工具栏“复制代码”按钮，带“已复制”即时视觉反馈
 - [x] **目录（TOC）Fixed 悬浮效果**：
   - 桌面端：Fixed 固定在文档右侧视口，带当前阅读小节平滑高亮与进度指示
   - 移动端：右下角 Fixed 悬浮抽屉按钮，点击唤出弹窗，点击章节跳转后自动收起
@@ -70,6 +78,12 @@
 
 ## 📝 跨设备工作交接记录 (Changelog / Handover Log)
 
+- **2026-10-26**：
+  - 实现文章时效性提示横幅（`ArticleBanner`）与最后修改时间戳（`lastModified`），同步更新文章卡片与 SEO 结构化数据。
+  - 实现代码块可选标题（Title）字段支持，并在 MDX 与 Markdoc 双轨内容中完全统一输出与表现。
+  - 为 Markdoc 编写自定义 `CodeBlock` 节点组件，解决 Markdoc 代码块默认无语法高亮的问题，按文档记录的语言（如 astro, typescript, bash 等）提供完整的 Shiki 双主题高亮。
+  - 升级 `CopyCode.astro` 客户端逻辑与 `global.css`，支持在有标题栏时将复制按钮有机嵌入标题栏右侧工具区，无标题时保持优雅悬浮。
+  - 将 `add_article_banner_and_timestamp` 与 `add_code_block_title` 两个特性完整合并至 `main` 分支并通过构建验证。
 - **2026-10-25**：
   - 重构顶栏与滚动容器为独立分层结构，彻底修复锚点跳转时不同标题大小的遮挡问题。
   - 为正文页面右下角增加自适应平滑返回顶部（BackToTop）按钮。

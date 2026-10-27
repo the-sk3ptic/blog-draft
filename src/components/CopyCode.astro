@@ -3,25 +3,73 @@
     const codeBlocks = document.querySelectorAll('pre');
 
     codeBlocks.forEach((block) => {
-      // Avoid duplicate buttons
-      if (block.parentElement?.classList.contains('code-block-wrapper')) {
+      // Find or create wrapper
+      let wrapper = block.closest('.code-block-wrapper');
+      if (wrapper && wrapper.querySelector('.copy-button')) {
         return;
       }
 
-      // Create wrapper
-      const wrapper = document.createElement('div');
-      wrapper.className = 'code-block-wrapper relative group';
-      block.parentNode?.insertBefore(wrapper, block);
-      wrapper.appendChild(block);
+      if (!wrapper) {
+        wrapper = document.createElement('div');
+        wrapper.className =
+          'code-block-wrapper relative group my-6 rounded-xl border border-[var(--color-border)] overflow-hidden bg-[var(--color-surface-alt)] shadow-xs';
+        block.parentNode?.insertBefore(wrapper, block);
+        wrapper.appendChild(block);
+      }
 
-      // Create button
+      // Check if block has title (e.g. from MDX transformer data-title)
+      const dataTitle = block.getAttribute('data-title');
+      let header = wrapper.querySelector('.code-block-header');
+
+      if (!header && dataTitle) {
+        wrapper.classList.add('has-title');
+        header = document.createElement('div');
+        header.className =
+          'code-block-header flex items-center justify-between px-4 py-2 border-b border-[var(--color-border)] bg-[var(--color-surface)] dark:bg-[var(--color-surface-alt)] text-xs text-[var(--color-text-secondary)] font-mono';
+
+        const titleContainer = document.createElement('div');
+        titleContainer.className = 'flex items-center gap-2 font-medium truncate';
+        titleContainer.innerHTML = `
+          <svg class="w-3.5 h-3.5 text-[var(--color-text-muted)] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          <span class="truncate">${dataTitle}</span>
+        `;
+        header.appendChild(titleContainer);
+
+        const actionsContainer = document.createElement('div');
+        actionsContainer.className = 'code-block-actions flex items-center gap-2';
+
+        const dataLang = block.getAttribute('data-language');
+        if (dataLang && dataLang !== 'plaintext') {
+          const langBadge = document.createElement('span');
+          langBadge.className =
+            'text-[10px] uppercase font-semibold text-[var(--color-text-muted)] tracking-wider px-1.5 py-0.5 rounded bg-[var(--color-surface-hover)]';
+          langBadge.textContent = dataLang;
+          actionsContainer.appendChild(langBadge);
+        }
+
+        header.appendChild(actionsContainer);
+        wrapper.insertBefore(header, block);
+      }
+
+      // Create copy button
       const button = document.createElement('button');
-      button.className =
-        'copy-button absolute top-2 right-2 px-2 py-1 text-xs rounded border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[var(--color-surface-hover)] focus:opacity-100 flex items-center gap-1 cursor-pointer';
+      button.type = 'button';
       button.setAttribute('aria-label', '复制代码到剪贴板');
       button.setAttribute('title', '复制代码到剪贴板');
+
+      if (header) {
+        button.className =
+          'copy-button px-2 py-0.5 text-xs rounded border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-secondary)] transition-colors flex items-center gap-1 cursor-pointer shrink-0';
+      } else {
+        button.className =
+          'copy-button absolute top-2 right-2 px-2 py-1 text-xs rounded border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[var(--color-surface-hover)] focus:opacity-100 flex items-center gap-1 cursor-pointer z-10';
+      }
+
       button.innerHTML = `
-        <svg class="copy-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="copy-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
         </svg>
@@ -36,7 +84,7 @@
           button.setAttribute('title', '已成功复制到剪贴板');
           button.setAttribute('aria-label', '已成功复制到剪贴板');
           button.innerHTML = `
-            <svg class="check-icon text-emerald-500" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="check-icon text-emerald-500" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
             <span class="copy-text text-emerald-500">已复制</span>
@@ -46,7 +94,7 @@
             button.setAttribute('title', '复制代码到剪贴板');
             button.setAttribute('aria-label', '复制代码到剪贴板');
             button.innerHTML = `
-              <svg class="copy-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="copy-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
@@ -58,7 +106,14 @@
         }
       });
 
-      wrapper.appendChild(button);
+      const actionsContainer = header ? header.querySelector('.code-block-actions') : null;
+      if (actionsContainer) {
+        actionsContainer.appendChild(button);
+      } else if (header) {
+        header.appendChild(button);
+      } else {
+        wrapper.appendChild(button);
+      }
     });
   }
 
