@@ -103,7 +103,7 @@ body {
 }
 
 .dark .prose {
-  --tw-prose-strong: var(--color-text);
+  --tw-prose-bold: var(--color-text);
   --tw-prose-links: var(--color-primary-400);
   --tw-prose-code: var(--color-primary-300);
 }
