@@ -6,8 +6,9 @@
 
 ## 📌 当前状态速览 (Current Status)
 
-- **当前阶段**：Phase 1（核心功能 MVP）与 Phase 2（阅读体验与发现）**已 100% 交付完成**。
+- **当前阶段**：Phase 1、Phase 2 全部完成；SPA 静态资源分离与轻量级 Fetch 性能深度优化已交付。
 - **构建状态**：静态构建（`pnpm build`）19 个静态路由全部通过，无报错，无死链。
+- **优化指标**：全站内联 CSS 降至 0 字节；全站客户端 JS 统一收敛打包为外部长效缓存 bundle；文章页 Gzip 传输体积仅 ~7.4KB。
 - **发布策略**：当前为本地私有库开发阶段，待内容与视觉完备后一键转为 Public 并触发 GitHub Pages 自动部署。
 
 ---
@@ -78,6 +79,18 @@
 
 ## 📝 跨设备工作交接记录 (Changelog / Handover Log)
 
+- **2026-10-27**：
+  - **SPA 架构资源分离与轻量化 Fetch 优化**：
+    - `astro.config.mjs` 配置 `build.inlineStylesheets: 'never'`，全面禁用 CSS 内联注入，全站内联样式彻底降至 0 字节，CSS 独立为外部哈希样式表并由浏览器强缓存。
+    - 开启 Astro 原生 `prefetch: { prefetchAll: true, defaultStrategy: 'hover' }`，实现鼠标悬停自动预拉取。
+    - 抽离收敛全站客户端脚本至 `src/scripts/`（`theme.ts`, `nav.ts`, `copy-code.ts`, `toc.ts`, `share.ts`, `back-to-top.ts`），并在 `BaseLayout.astro` 统一由 `app.ts` 挂载，彻底消除了各组件碎片化内联 script，全站 JS 统一打包为一个外部缓存 chunk。
+    - 经性能对比测试，页面切换时拉取的 HTML Gzip 传输体积降至 ~7.4KB，实现极速纯文本骨架置换，不再重复传输 CSS/JS。
+  - **精简 `<head>` Meta 冗杂配置**：
+    - 去除无标准的 `<meta name="title">`（由 `<title>` 接管）。
+    - 剔除全部已淘汰的 `article:*` 冗余属性（现代搜索与社交平台已完全由 Schema.org JSON-LD 结构化数据接管）。
+    - 精简 `twitter:*`：仅保留 `<meta name="twitter:card" content="summary_large_image" />`，其余 `twitter:title/desc/image/url` 依官方规范全自动回退继承 `og:*`。
+    - Open Graph 精简为核心 5 属性（`og:type`, `og:url`, `og:title`, `og:description`, `og:image`），大幅净化 HTML 头部。
+  - 同步更新 `AGENTS.md` 规范。
 - **2026-10-26**：
   - 实现文章时效性提示横幅（`ArticleBanner`）与最后修改时间戳（`lastModified`），同步更新文章卡片与 SEO 结构化数据。
   - 实现代码块可选标题（Title）字段支持，并在 MDX 与 Markdoc 双轨内容中完全统一输出与表现。

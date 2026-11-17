@@ -57,9 +57,11 @@
 - **设计**：浅色模式采用 `github-light`，深色模式采用 `github-dark`。
 - **约束**：深色模式适配由 `src/styles/global.css` 中的 `html.dark .astro-code` 系列规则通过 CSS 变量强制覆盖，**不可删除这些 CSS 覆盖规则**。
 
-### ⑦ 客户端生命周期与 SPA 兼容
-- **设计**：全站启用 `<ClientRouter />`。
-- **约束**：所有客户端交互脚本（`CopyCode.astro`、`TOC.astro`、`ThemeToggle.astro`、`BackToTop.astro`、`ShareButtons.astro` 等）**必须监听 `document.addEventListener('astro:page-load', ...)`**，且 script 标签必须带有 `is:inline`，防止 Astro 打包时将其优化或误剔除。
+### ⑦ 客户端生命周期与 SPA 资源分离
+- **设计**：全站启用 `<ClientRouter />`，并在 `astro.config.mjs` 中配置 `build.inlineStylesheets: 'never'` 与 `prefetch` 预拉取。
+- **约束**：
+  - 所有客户端交互脚本（`CopyCode.astro`、`TOC.astro`、`ThemeToggle.astro`、`BackToTop.astro`、`ShareButtons.astro` 等）**必须监听 `document.addEventListener('astro:page-load', ...)`**。
+  - **交互脚本严禁使用 `is:inline`**：除必要的防闪烁脚本（`BaseHead.astro` 中的主题预初始化）和第三方 CDN 脚本（`Giscus.astro`）外，所有交互脚本必须采用标准 `<script>` 标签，由 Vite 统一编译打包为带指纹哈希的独立 `.js` chunks 并享受浏览器长效强缓存，切勿将长脚本内联注入 HTML 导致 SPA fetch 体积膨胀。
 
 ### ⑧ A11y 可访问性与悬停说明
 - **约束**：所有按钮（切换主题、复制代码、返回顶部、分享等）及链接必须配有描述性的 `title="..."` 悬停提示和对应的 `aria-label="..."` / `aria-expanded` 属性。
